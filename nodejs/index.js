@@ -1,20 +1,36 @@
 const HtmlParser = require("../pkg/html2VD")
+const {parse_template} = require("templ8m8s")
 
+
+const times = new Array(10000).fill(0);
 
 const html = `
-  <div class='title'>
-    <span class='span'>
-      <span>hello</span>
-    </span>
-  </div>
   <div>
-    title
+    <span>
+    hello
+    </span>
+    <span>rom</span>
+       ${times.map(() => { return "<span></span>"}).join("")}
+
   </div>
 `
+//    ${times.map(() => { return "<span></span>"}).join("")}
+
+
 
 const filterHtml = (html) => {
   return html.trim().replace(/[\n]+[\s]*/g,"")
 }
 
-console.log(HtmlParser.html2VD(html));
+console.time("wasm")
+// console.log(filterHtml(html))
+HtmlParser.html2VD(filterHtml(html))
+console.timeEnd("wasm")
 
+
+
+
+console.time("js")
+const vdom = parse_template(filterHtml(html))
+// console.log(vdom)
+console.timeEnd("js")

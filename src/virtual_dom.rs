@@ -10,7 +10,7 @@ use std::{cell::RefCell, thread::current};
 pub struct Node {
     tag: Option<String>,
     // inner_html: Option<String>,
-    attributes: Vec<TagAttr>,
+    attrs: Vec<TagAttr>,
     node_type: NodeType,
     children: Vec<Rc<RefCell<Node>>>,
     parent: Option<Weak<RefCell<Node>>>,
@@ -26,7 +26,7 @@ impl Node {
         self.node_type = node_type;
     }
     fn add_attr(&mut self, name: String, value: String) {
-        self.attributes.push(TagAttr { name, value });
+        self.attrs.push(TagAttr { name, value });
     }
 }
 
@@ -35,7 +35,7 @@ impl Default for Node {
         Self {
             tag: None,
             // inner_html: None,
-            attributes: vec![],
+            attrs: vec![],
             node_type: NodeType::None,
             children: vec![],
             parent: None,
@@ -57,33 +57,32 @@ pub enum NodeType {
     None,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Parser {
-    current_node: Option<Rc<RefCell<Node>>>,
-}
+// #[derive(Debug, Deserialize, Serialize)]
+// pub struct Parser {
+//     current_node: Option<Rc<RefCell<Node>>>,
+// }
 
-impl Default for Parser {
-    fn default() -> Self {
-        Self { current_node: None }
-    }
-}
+// impl Default for Parser {
+//     fn default() -> Self {
+//         Self { current_node: None }
+//     }
+// }
 
-impl Parser {
-    fn new() -> Self {
-        Self { ..Self::default() }
-    }
-}
+// impl Parser {
+//     fn new() -> Self {
+//         Self { ..Self::default() }
+//     }
+// }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct VD {
-    parser: Rc<RefCell<Parser>>,
     root: Option<Rc<RefCell<Node>>>,
 }
 
 pub trait VirtualDom {
     fn new() -> Self;
     fn parse_html(&mut self, html: &str);
-    fn get_vd(&self) -> Option<Rc<RefCell<Node>>>;
+    fn get_vd(&mut self) -> Option<Rc<RefCell<Node>>>;
 }
 
 impl VirtualDom for VD {
@@ -91,20 +90,18 @@ impl VirtualDom for VD {
         Self { ..Self::default() }
     }
     fn parse_html(&mut self, html: &str) {
-        let mut root_node = Node::new();
-        root_node.init(None, NodeType::FragmentNode);
-        let root_node = Rc::new(RefCell::new(root_node));
-        self.root = Some(root_node.clone());
-        let mut parser_mut = self.parser.borrow_mut();
-        parser_mut.current_node = Some(root_node.clone());
+        let mut root = Node::new();
+        root.init(None, NodeType::FragmentNode);
+        let root = Rc::new(RefCell::new(root));
+        self.root = Some(Rc::clone(&root));
+        let mut current_node = Rc::clone(&root);
+        // parent = root
+        let mut parent_node = Rc::clone(&root);
         for (_, tag) in htmlstream::tag_iter(html) {
-            let current_node = parser_mut.current_node.clone().unwrap();
-            let mut current_node = current_node.borrow_mut();
-            let mut parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
             match tag.state {
                 HTMLTagState::Closing => {
                     // parser_mut.current_node = current_node.parent.clone().unwrap().upgrade();
-                    parser_mut.current_node = Some(parent_node.clone());
+                    current_node = Rc::clone(&parent_node);
                 }
                 HTMLTagState::Opening => {
                     let node_type = NodeType::ElementNode;
@@ -114,12 +111,15 @@ impl VirtualDom for VD {
                     for (_, attr) in htmlstream::attr_iter(&tag.attributes) {
                         node.add_attr(attr.name, attr.value);
                     }
-                    parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
+                    // parent =
+                    parent_node = Rc::clone(&current_node);
                     // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
-
                     let node = Rc::new(RefCell::new(node));
-                    current_node.children.push(node.clone());
-                    parser_mut.current_node = Some(node.clone());
+                    {
+                        let mut current_node_mut = current_node.borrow_mut();
+                        current_node_mut.children.push(Rc::clone(&node));
+                    }
+                    current_node = Rc::clone(&node);
                 }
                 _ => {
                     let node_type = match tag.state {
@@ -131,23 +131,32 @@ impl VirtualDom for VD {
                         node.add_attr(attr.name, attr.value);
                     }
                     node.init(Some(tag.name), node_type);
-                    parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
+                    parent_node = Rc::clone(&current_node);
                     // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
                     let node = Rc::new(RefCell::new(node));
-                    current_node.children.push(node.clone());
+                    let mut current_node = current_node.borrow_mut();
+                    current_node.children.push(Rc::clone(&node));
                 }
             }
         }
     }
-    fn get_vd(&self) -> Option<Rc<RefCell<Node>>> {
-        self.root.clone()
+    fn get_vd(&mut self) -> Option<Rc<RefCell<Node>>> {
+        let root = self.root.take();
+        let r = match root {
+            Some(rm) => {
+                self.root = Some(rm.clone());
+                Some(rm)
+            }
+            None => None,
+        };
+        r
     }
 }
 
 impl Default for VD {
     fn default() -> Self {
         VD {
-            parser: Rc::new(RefCell::new(Parser::new())),
+            // parser: Rc::new(RefCell::new(Parser::new())),
             root: None,
         }
     }
