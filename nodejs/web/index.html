@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script type="module">
+  import init, { html2VD } from './html2VD.js';
+  async function run() {
+    await init();
+    const times = new Array(10).fill(0);
+
+    const html = `
+  <div>
+    <span>
+      hello
+      <input />
+      <button onclick="handleClick">{{}}</button>
+    </span>
+    <span>rom</span>
+
+       ${times.map(() => { return "<span>hehehehhe</span>" }).join("")}
+  </div>
+`
+
+    //    ${times.map(() => { return "<span></span>"}).join("")}
+
+
+
+    const filterHtml = (html) => {
+      return html.trim().replace(/[\n]+[\s]*/g, "")
+    }
+    console.log(filterHtml(html))
+
+    console.log(html2VD(filterHtml(html)))
+
+  }
+  run();
+</script>
+
+
+</html>

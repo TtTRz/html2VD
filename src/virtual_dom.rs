@@ -1,15 +1,14 @@
 use htmlstream::HTMLTagState;
 
 use serde::{Deserialize, Serialize};
-use serde_json::Result;
 
+use std::cell::RefCell;
 use std::rc::{Rc, Weak};
-use std::{cell::RefCell, thread::current};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Node {
     tag: Option<String>,
-    // inner_html: Option<String>,
+    inner_html: Option<String>,
     attrs: Vec<TagAttr>,
     node_type: NodeType,
     children: Vec<Rc<RefCell<Node>>>,
@@ -28,13 +27,16 @@ impl Node {
     fn add_attr(&mut self, name: String, value: String) {
         self.attrs.push(TagAttr { name, value });
     }
+    fn set_inner_html(&mut self, inner_html: String) {
+        self.inner_html = Some(inner_html);
+    }
 }
 
 impl Default for Node {
     fn default() -> Self {
         Self {
             tag: None,
-            // inner_html: None,
+            inner_html: None,
             attrs: vec![],
             node_type: NodeType::None,
             children: vec![],
@@ -57,23 +59,6 @@ pub enum NodeType {
     None,
 }
 
-// #[derive(Debug, Deserialize, Serialize)]
-// pub struct Parser {
-//     current_node: Option<Rc<RefCell<Node>>>,
-// }
-
-// impl Default for Parser {
-//     fn default() -> Self {
-//         Self { current_node: None }
-//     }
-// }
-
-// impl Parser {
-//     fn new() -> Self {
-//         Self { ..Self::default() }
-//     }
-// }
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct VD {
     root: Option<Rc<RefCell<Node>>>,
@@ -87,22 +72,18 @@ pub trait VirtualDom {
 
 impl VirtualDom for VD {
     fn new() -> Self {
-        Self { ..Self::default() }
+        VD { ..Self::default() }
     }
     fn parse_html(&mut self, html: &str) {
         let mut root = Node::new();
         root.init(None, NodeType::FragmentNode);
         let root = Rc::new(RefCell::new(root));
         self.root = Some(Rc::clone(&root));
-        let mut current_node = Rc::clone(&root);
         // parent = root
-        let mut parent_node = Rc::clone(&root);
+        let mut parent_node_stack = vec![];
+        parent_node_stack.push(Rc::clone(&root));
         for (_, tag) in htmlstream::tag_iter(html) {
             match tag.state {
-                HTMLTagState::Closing => {
-                    // parser_mut.current_node = current_node.parent.clone().unwrap().upgrade();
-                    current_node = Rc::clone(&parent_node);
-                }
                 HTMLTagState::Opening => {
                     let node_type = NodeType::ElementNode;
                     let mut node = Node::new();
@@ -111,15 +92,19 @@ impl VirtualDom for VD {
                     for (_, attr) in htmlstream::attr_iter(&tag.attributes) {
                         node.add_attr(attr.name, attr.value);
                     }
-                    // parent =
-                    parent_node = Rc::clone(&current_node);
-                    // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
                     let node = Rc::new(RefCell::new(node));
                     {
-                        let mut current_node_mut = current_node.borrow_mut();
-                        current_node_mut.children.push(Rc::clone(&node));
+                        let parent_node = parent_node_stack.pop().unwrap();
+                        {
+                            let mut parent_node_mut = parent_node.borrow_mut();
+                            parent_node_mut.children.push(Rc::clone(&node));
+                        }
+                        parent_node_stack.push(parent_node);
                     }
-                    current_node = Rc::clone(&node);
+                    parent_node_stack.push(Rc::clone(&node));
+                }
+                HTMLTagState::Closing => {
+                    parent_node_stack.pop();
                 }
                 _ => {
                     let node_type = match tag.state {
@@ -130,12 +115,18 @@ impl VirtualDom for VD {
                     for (_, attr) in htmlstream::attr_iter(&tag.attributes) {
                         node.add_attr(attr.name, attr.value);
                     }
+                    // TextNode set innerHtml
+                    if node_type == NodeType::TextNode {
+                        node.set_inner_html(tag.html)
+                    }
                     node.init(Some(tag.name), node_type);
-                    parent_node = Rc::clone(&current_node);
-                    // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
                     let node = Rc::new(RefCell::new(node));
-                    let mut current_node = current_node.borrow_mut();
-                    current_node.children.push(Rc::clone(&node));
+                    let parent_node = parent_node_stack.pop().unwrap();
+                    {
+                        let mut parent_node_mut = parent_node.borrow_mut();
+                        parent_node_mut.children.push(Rc::clone(&node));
+                    }
+                    parent_node_stack.push(parent_node);
                 }
             }
         }
@@ -144,7 +135,7 @@ impl VirtualDom for VD {
         let root = self.root.take();
         let r = match root {
             Some(rm) => {
-                self.root = Some(rm.clone());
+                self.root = Some(Rc::clone(&rm));
                 Some(rm)
             }
             None => None,

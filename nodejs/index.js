@@ -2,7 +2,7 @@ const HtmlParser = require("../pkg/html2VD")
 const {parse_template} = require("templ8m8s")
 
 
-const times = new Array(10000).fill(0);
+const times = new Array(100).fill(0);
 
 const html = `
   <div>
@@ -26,6 +26,8 @@ console.time("wasm")
 // console.log(filterHtml(html))
 HtmlParser.html2VD(filterHtml(html))
 console.timeEnd("wasm")
+console.log(HtmlParser.html2VD(filterHtml(html))
+)
 
 
 
