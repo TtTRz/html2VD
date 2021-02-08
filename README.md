@@ -1,6 +1,11 @@
 # html2VD
 HTML to VirtualDOM
 
+## how to use
+```shell
+wasm-pack build --target nodejs
+```
+## sample
 ```html
 <div>
   <h1>title</h1>
@@ -12,12 +17,14 @@ HTML to VirtualDOM
   </div>
 </div>
 ```
-
 ```js
+const HtmlParser = require("../pkg/html2VD")
+
 const filterHtml = (html) => {
   return html.trim().replace(/[\n]+[\s]*/g, "")
 }
-let vd = html2VD(filterHtml(html)
+
+let vd = HtmlParser.html2VD(filterHtml(html)
 
 // vd obj
 {
