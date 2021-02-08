@@ -1,4 +1,4 @@
-use htmlstream::{HTMLTagAttribute, HTMLTagState};
+use htmlstream::HTMLTagState;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -73,12 +73,13 @@ impl Parser {
 #[derive(Debug)]
 pub struct VD {
     parser: Rc<RefCell<Parser>>,
-    pub root: Option<Rc<RefCell<Node>>>,
+    root: Option<Rc<RefCell<Node>>>,
 }
 
 pub trait VirtualDom {
     fn new() -> Self;
     fn parse_html(&mut self, html: &str);
+    fn get_vd(&self) -> Option<Rc<RefCell<Node>>>;
 }
 
 impl VirtualDom for VD {
@@ -128,6 +129,9 @@ impl VirtualDom for VD {
                 }
             }
         }
+    }
+    fn get_vd(&self) -> Option<Rc<RefCell<Node>>> {
+        self.root.clone()
     }
 }
 
