@@ -1,5 +1,7 @@
 # html2VD
-HTML to VirtualDOM
+HTML To VirtualDOM.
+
+**Still in development. Do not use it in productional stage.**
 
 ## how to use
 ```shell
