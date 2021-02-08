@@ -87,7 +87,11 @@ impl VirtualDom for VD {
                 HTMLTagState::Opening => {
                     let node_type = NodeType::ElementNode;
                     let mut node = Node::new();
-                    node.init(Some(tag.name), node_type);
+                    let tag_name = match tag.name.as_str() {
+                        "" => None,
+                        _ => Some(tag.name),
+                    };
+                    node.init(tag_name, node_type);
                     // attr
                     for (_, attr) in htmlstream::attr_iter(&tag.attributes) {
                         node.add_attr(attr.name, attr.value);
@@ -119,7 +123,11 @@ impl VirtualDom for VD {
                     if node_type == NodeType::TextNode {
                         node.set_inner_html(tag.html)
                     }
-                    node.init(Some(tag.name), node_type);
+                    let tag_name = match tag.name.as_str() {
+                        "" => None,
+                        _ => Some(tag.name),
+                    };
+                    node.init(tag_name, node_type);
                     let node = Rc::new(RefCell::new(node));
                     let parent_node = parent_node_stack.pop().unwrap();
                     {

@@ -18,16 +18,15 @@
     const times = new Array(10).fill(0);
 
     const html = `
+    <div>
+  <h1>title</h1>
   <div>
-    <span>
-      hello
-      <input />
-      <button onclick="handleClick">{{}}</button>
-    </span>
-    <span>rom</span>
-
-       ${times.map(() => { return "<span>hehehehhe</span>" }).join("")}
+    <button onclick="handleclick">change title</button>
   </div>
+  <div class="footer">
+    <span>Rom</span>
+  </div>
+</div>
 `
 
     //    ${times.map(() => { return "<span></span>"}).join("")}

@@ -5,14 +5,13 @@ const {parse_template} = require("templ8m8s")
 const times = new Array(100).fill(0);
 
 const html = `
-  <div>
-    <span>
-    hello
-    </span>
-    <span>rom</span>
-       ${times.map(() => { return "<span></span>"}).join("")}
-
+<div>
+  <h1>title</h1>
+  <button onclick="handleclick">change title</button>
+  <div class="footer">
+    <span>Rom</span>
   </div>
+</div>
 `
 //    ${times.map(() => { return "<span></span>"}).join("")}
 
