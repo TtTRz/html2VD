@@ -12,4 +12,9 @@ const html = `
   </div>
 `
 
-HtmlParser.parse(html.trim().replace(/[\n]+[\s]*/g,""))
+const filterHtml = (html) => {
+  return html.trim().replace(/[\n]+[\s]*/g,"")
+}
+
+console.log(HtmlParser.html2VD(html));
+

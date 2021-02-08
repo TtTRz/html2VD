@@ -1,8 +1,12 @@
 use htmlstream::HTMLTagState;
-use std::cell::RefCell;
-use std::rc::{Rc, Weak};
 
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+
+use std::rc::{Rc, Weak};
+use std::{cell::RefCell, thread::current};
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Node {
     tag: Option<String>,
     // inner_html: Option<String>,
@@ -11,20 +15,6 @@ pub struct Node {
     children: Vec<Rc<RefCell<Node>>>,
     parent: Option<Weak<RefCell<Node>>>,
     // root: Option<Rc<RefCell<Node>>>,
-}
-
-#[derive(Debug)]
-pub struct TagAttr {
-    name: String,
-    value: String,
-}
-
-#[derive(Debug)]
-pub enum NodeType {
-    ElementNode,
-    FragmentNode,
-    TextNode,
-    None,
 }
 
 impl Node {
@@ -53,7 +43,21 @@ impl Default for Node {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub struct TagAttr {
+    name: String,
+    value: String,
+}
+
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub enum NodeType {
+    ElementNode,
+    FragmentNode,
+    TextNode,
+    None,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Parser {
     current_node: Option<Rc<RefCell<Node>>>,
 }
@@ -70,7 +74,7 @@ impl Parser {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct VD {
     parser: Rc<RefCell<Parser>>,
     root: Option<Rc<RefCell<Node>>>,
@@ -96,9 +100,11 @@ impl VirtualDom for VD {
         for (_, tag) in htmlstream::tag_iter(html) {
             let current_node = parser_mut.current_node.clone().unwrap();
             let mut current_node = current_node.borrow_mut();
+            let mut parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
             match tag.state {
                 HTMLTagState::Closing => {
-                    parser_mut.current_node = current_node.parent.clone().unwrap().upgrade();
+                    // parser_mut.current_node = current_node.parent.clone().unwrap().upgrade();
+                    parser_mut.current_node = Some(parent_node.clone());
                 }
                 HTMLTagState::Opening => {
                     let node_type = NodeType::ElementNode;
@@ -108,7 +114,9 @@ impl VirtualDom for VD {
                     for (_, attr) in htmlstream::attr_iter(&tag.attributes) {
                         node.add_attr(attr.name, attr.value);
                     }
-                    node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
+                    parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
+                    // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
+
                     let node = Rc::new(RefCell::new(node));
                     current_node.children.push(node.clone());
                     parser_mut.current_node = Some(node.clone());
@@ -123,7 +131,8 @@ impl VirtualDom for VD {
                         node.add_attr(attr.name, attr.value);
                     }
                     node.init(Some(tag.name), node_type);
-                    node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
+                    parent_node = Rc::clone(&(parser_mut.current_node.clone().unwrap()));
+                    // node.parent = Some(Rc::downgrade(&(parser_mut.current_node.clone().unwrap())));
                     let node = Rc::new(RefCell::new(node));
                     current_node.children.push(node.clone());
                 }
@@ -137,7 +146,7 @@ impl VirtualDom for VD {
 
 impl Default for VD {
     fn default() -> Self {
-        Self {
+        VD {
             parser: Rc::new(RefCell::new(Parser::new())),
             root: None,
         }
