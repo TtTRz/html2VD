@@ -1,7 +1,5 @@
 use htmlstream::HTMLTagState;
-
 use serde::{Deserialize, Serialize};
-
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
@@ -12,7 +10,7 @@ pub struct Node {
     attrs: Vec<TagAttr>,
     node_type: NodeType,
     children: Vec<Rc<RefCell<Node>>>,
-    parent: Option<Weak<RefCell<Node>>>,
+    // parent: Option<Weak<RefCell<Node>>>,
     // root: Option<Rc<RefCell<Node>>>,
 }
 
@@ -40,7 +38,7 @@ impl Default for Node {
             attrs: vec![],
             node_type: NodeType::None,
             children: vec![],
-            parent: None,
+            // parent: None,
             // root: None,
         }
     }
@@ -97,15 +95,10 @@ impl VirtualDom for VD {
                         node.add_attr(attr.name, attr.value);
                     }
                     let node = Rc::new(RefCell::new(node));
-                    {
-                        let parent_node = parent_node_stack.pop().unwrap();
-                        {
-                            let mut parent_node_mut = parent_node.borrow_mut();
-                            parent_node_mut.children.push(Rc::clone(&node));
-                        }
-                        parent_node_stack.push(parent_node);
-                    }
-                    parent_node_stack.push(Rc::clone(&node));
+                    let parent_node = parent_node_stack.pop().unwrap();
+                    parent_node.borrow_mut().children.push(Rc::clone(&node));
+                    parent_node_stack.push(parent_node);
+                    parent_node_stack.push(node);
                 }
                 HTMLTagState::Closing => {
                     parent_node_stack.pop();
@@ -130,10 +123,7 @@ impl VirtualDom for VD {
                     node.init(tag_name, node_type);
                     let node = Rc::new(RefCell::new(node));
                     let parent_node = parent_node_stack.pop().unwrap();
-                    {
-                        let mut parent_node_mut = parent_node.borrow_mut();
-                        parent_node_mut.children.push(Rc::clone(&node));
-                    }
+                    parent_node.borrow_mut().children.push(node);
                     parent_node_stack.push(parent_node);
                 }
             }
@@ -141,14 +131,7 @@ impl VirtualDom for VD {
     }
     fn get_vd(&mut self) -> Option<Rc<RefCell<Node>>> {
         let root = self.root.take();
-        let r = match root {
-            Some(rm) => {
-                self.root = Some(Rc::clone(&rm));
-                Some(rm)
-            }
-            None => None,
-        };
-        r
+        root.map(|r| Rc::clone(&r))
     }
 }
 
