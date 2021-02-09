@@ -1,6 +1,6 @@
 use htmlstream::HTMLTagState;
-use std::cell::RefCell;
 use std::rc::Rc;
+use std::{borrow::BorrowMut, cell::RefCell};
 
 use crate::model::node::{Node, NodeType};
 use crate::model::vd::VD;
@@ -34,10 +34,18 @@ impl VirtualDom for VD {
                         node.add_attr(attr.name, attr.value);
                     }
                     let node = Rc::new(RefCell::new(node));
-                    let parent_node = parent_node_stack.pop().unwrap();
+                    let mut parent_node = parent_node_stack.pop().unwrap();
+                    // {
+                    //     let mut parent_node_mut = parent_node.borrow_mut();
+                    //     parent_node_mut.children.push(Rc::clone(&node));
+                    // }
                     {
-                        let mut parent_node_mut = parent_node.borrow_mut();
-                        parent_node_mut.children.push(Rc::clone(&node));
+                        parent_node
+                            .borrow_mut()
+                            .as_ref()
+                            .borrow_mut()
+                            .children
+                            .push(Rc::clone(&node));
                     }
                     parent_node_stack.push(parent_node);
                     parent_node_stack.push(node);
@@ -64,8 +72,13 @@ impl VirtualDom for VD {
                     };
                     node.init(tag_name, node_type);
                     let node = Rc::new(RefCell::new(node));
-                    let parent_node = parent_node_stack.pop().unwrap();
-                    parent_node.borrow_mut().children.push(node);
+                    let mut parent_node = parent_node_stack.pop().unwrap();
+                    parent_node
+                        .borrow_mut()
+                        .as_ref()
+                        .borrow_mut()
+                        .children
+                        .push(node);
                     parent_node_stack.push(parent_node);
                 }
             }
