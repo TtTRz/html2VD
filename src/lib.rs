@@ -7,14 +7,16 @@ use std::rc::Rc;
 
 use wasm_bindgen::prelude::*;
 
-use virtual_dom::{Node, VirtualDom, VD};
+mod model;
+use model::node::Node;
+use model::vd::VD;
+
+mod algo;
+use algo::virtual_dom::VirtualDom;
 
 #[cfg(test)]
-mod tests {
-    mod virtual_dom;
-}
+mod tests;
 
-mod virtual_dom;
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 
