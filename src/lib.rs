@@ -40,7 +40,7 @@ pub struct IJsNode {
 }
 
 #[wasm_bindgen]
-pub fn html2VD(html: &str) -> JsValue {
+pub fn html_2_vd(html: &str) -> JsValue {
     let mut vd = VD::new();
     vd.parse_html(html);
     JsValue::from_serde(&vd.get_vd()).unwrap()

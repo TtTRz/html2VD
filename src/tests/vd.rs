@@ -2,6 +2,7 @@ use virtual_dom::VirtualDom;
 
 use crate::algo::virtual_dom;
 use crate::model::vd::VD;
+
 #[test]
 fn test_vd_new() {
     let vd = VD::new();
