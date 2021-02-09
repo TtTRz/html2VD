@@ -35,13 +35,7 @@ impl VirtualDom for VD {
                     }
                     let node = Rc::new(RefCell::new(node));
                     let parent_node = parent_node_stack.pop().unwrap();
-                    // {
-                    //     let mut parent_node_mut = parent_node.borrow_mut();
-                    //     parent_node_mut.children.push(Rc::clone(&node));
-                    // }
-                    {
-                        parent_node.borrow_mut().children.push(Rc::clone(&node));
-                    }
+                    parent_node.borrow_mut().children.push(Rc::clone(&node));
                     parent_node_stack.push(parent_node);
                     parent_node_stack.push(node);
                 }

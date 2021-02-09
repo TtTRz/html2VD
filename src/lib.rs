@@ -1,10 +1,6 @@
-extern crate serde;
-extern crate serde_json;
-
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
-
 use wasm_bindgen::prelude::*;
 
 mod model;
@@ -14,7 +10,6 @@ use model::vd::VD;
 mod algo;
 use algo::virtual_dom::VirtualDom;
 
-#[cfg(test)]
 mod tests;
 
 #[cfg(feature = "wee_alloc")]

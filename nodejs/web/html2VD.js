@@ -104,10 +104,10 @@ function takeObject(idx) {
 * @param {string} html
 * @returns {any}
 */
-export function html2VD(html) {
+export function html_2_vd(html) {
     var ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     var len0 = WASM_VECTOR_LEN;
-    var ret = wasm.html2VD(ptr0, len0);
+    var ret = wasm.html_2_vd(ptr0, len0);
     return takeObject(ret);
 }
 
