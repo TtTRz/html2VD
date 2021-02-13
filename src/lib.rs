@@ -1,3 +1,4 @@
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -9,6 +10,9 @@ use model::vd::VD;
 
 mod algo;
 use algo::virtual_dom::VirtualDom;
+
+mod utils;
+use utils::html_filter::html_filter;
 
 mod tests;
 
@@ -37,6 +41,7 @@ pub struct IJsNode {
 #[wasm_bindgen]
 pub fn html_2_vd(html: &str) -> JsValue {
     let mut vd = VD::new();
-    vd.parse_html(html);
+    let target_html = html_filter(html.into());
+    vd.parse_html(target_html.as_str());
     JsValue::from_serde(&vd.get_vd()).unwrap()
 }

@@ -2,6 +2,20 @@ use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
 
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub struct TagAttr {
+    name: String,
+    value: String,
+}
+
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub enum NodeType {
+    ElementNode,
+    FragmentNode,
+    TextNode,
+    None,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Node {
     tag: Option<String>,
@@ -17,13 +31,16 @@ impl Node {
     pub fn new() -> Self {
         Node { ..Node::default() }
     }
+
     pub fn init(&mut self, tag: Option<String>, node_type: NodeType) {
         self.tag = tag;
         self.node_type = node_type;
     }
+
     pub fn add_attr(&mut self, name: String, value: String) {
         self.attrs.push(TagAttr { name, value });
     }
+
     pub fn set_inner_html(&mut self, inner_html: String) {
         self.inner_html = Some(inner_html);
     }
@@ -41,18 +58,4 @@ impl Default for Node {
             // root: None,
         }
     }
-}
-
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
-pub struct TagAttr {
-    name: String,
-    value: String,
-}
-
-#[derive(Debug, PartialEq, Deserialize, Serialize)]
-pub enum NodeType {
-    ElementNode,
-    FragmentNode,
-    TextNode,
-    None,
 }

@@ -19,6 +19,7 @@ log = "*"
 serde= {version="*", features = ["derive", "rc"]}
 serde_json="*"
 serde_derive="*"
+regex="*"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.20"

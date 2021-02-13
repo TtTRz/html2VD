@@ -1,4 +1,4 @@
-const HtmlParser = require("../pkg/html_2_vd")
+const HtmlParser = require("../pkg/html2VD.js")
 const {parse_template} = require("templ8m8s")
 
 
@@ -23,10 +23,9 @@ const filterHtml = (html) => {
 
 console.time("wasm")
 // console.log(filterHtml(html))
-HtmlParser.html_2_vd(filterHtml(html))
+HtmlParser.html_2_vd(html)
 console.timeEnd("wasm")
-console.log(HtmlParser.html_2_vd(filterHtml(html))
-)
+console.log(HtmlParser.html_2_vd(html))
 
 
 
