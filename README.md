@@ -20,13 +20,9 @@ wasm-pack build --target nodejs
 </div>
 ```
 ```js
-const HtmlParser = require("../pkg/html2VD")
+const HtmlParser = require("../pkg/html2VD.js")
 
-const filterHtml = (html) => {
-  return html.trim().replace(/[\n]+[\s]*/g, "")
-}
-
-let vd = HtmlParser.html2VD(filterHtml(html)
+let vd = HtmlParser.html_2_vd(html)
 
 // vd obj
 {
