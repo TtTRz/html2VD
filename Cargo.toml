@@ -20,6 +20,7 @@ serde= {version="*", features = ["derive", "rc"]}
 serde_json="*"
 serde_derive="*"
 regex="*"
+typetag="*"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.20"

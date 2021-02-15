@@ -1,4 +1,3 @@
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -35,7 +34,7 @@ extern "C" {
 #[derive(Clone, Serialize, Deserialize)]
 pub struct IJsNode {
     #[wasm_bindgen(skip)]
-    pub root: Rc<RefCell<Node>>,
+    pub root: Rc<RefCell<Box<dyn Node>>>,
 }
 
 #[wasm_bindgen]

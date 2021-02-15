@@ -1,25 +1,26 @@
-// use regex::Regex;
-// use serde::{Deserialize, Serialize};
-// use std::cell::RefCell;
-// use std::rc::Rc;
+use regex::Regex;
+use serde::{Deserialize, Serialize};
+use std::rc::Rc;
+use std::{borrow::Borrow, cell::RefCell};
 
-// mod model;
-// use model::node::Node;
-// use model::vd::VD;
+mod utils;
+use utils::html_filter::html_filter;
 
-// mod algo;
-// use algo::virtual_dom::VirtualDom;
+mod model;
+use model::node::Node;
+use model::vd::VD;
 
-// fn main() {
-//     let html = r"
-//       <div>
-//         rom
-//       </div>
-//     ";
-//     let mut vd = VD::new();
-//     let rg = Regex::new(r"[\n]+[\s]*").unwrap();
-//     let h = html.trim();
-//     let a = rg.replace_all(h, "");
-//     println!("{}", a);
-//     vd.parse_html(html);
-// }
+mod algo;
+use algo::virtual_dom::VirtualDom;
+
+fn main() {
+    let html = r"
+      <div>
+        rom
+      </div>
+    ";
+    let mut vd = VD::new();
+    let target_html = html_filter(html.into());
+    vd.parse_html(target_html.as_str());
+    println!("{:?}", vd.get_vd());
+}

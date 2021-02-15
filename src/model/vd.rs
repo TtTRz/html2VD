@@ -1,12 +1,11 @@
-use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use crate::model::node::Node;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
 pub struct VD {
-    pub root: Option<Rc<RefCell<Node>>>,
+    pub root: Option<Rc<RefCell<Box<dyn Node>>>>,
 }
 
 impl Default for VD {

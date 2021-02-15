@@ -25,7 +25,7 @@ const HtmlParser = require("../pkg/html2VD.js")
 let vd = HtmlParser.html_2_vd(html)
 
 // vd obj
-{
+let vdObj = {
   tag: null,
   node_type: "FragmentNode",
   inner_html: null,
@@ -80,7 +80,7 @@ let vd = HtmlParser.html_2_vd(html)
         inner_html: null,
         attrs: [],
         children: [{
-          tag: "",
+          tag: null,
           node_type: "TextNode",
           inner_html: "Rom",
           attrs: [],
