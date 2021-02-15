@@ -16,8 +16,7 @@ pub enum NodeType {
     None,
 }
 
-#[typetag::serde(tag = "children")]
-pub trait Node {
+pub trait Node: erased_serde::Serialize {
     fn add_attr(&mut self, name: String, value: String) {}
     fn set_inner_html(&mut self, inner_html: String) {}
     fn get_node_type(&self) -> NodeType;
@@ -26,13 +25,13 @@ pub trait Node {
 
 use core::fmt::Debug;
 
-impl Debug for dyn Node {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{:?}: {:?}", self.get_node_type(), self)
-    }
-}
+// impl Debug for dyn Node {
+//     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+//         write!(f, "{:?}: {:?}", self.get_node_type(), self)
+//     }
+// }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct ElementNode {
     tag: Option<String>,
     inner_html: Option<String>,
@@ -50,7 +49,6 @@ impl ElementNode {
     }
 }
 
-#[typetag::serde]
 impl Node for ElementNode {
     fn add_attr(&mut self, name: String, value: String) {
         self.attrs.push(TagAttr { name, value });
@@ -80,7 +78,7 @@ impl Default for ElementNode {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct FragmentNode {
     tag: Option<String>,
     inner_html: Option<String>,
@@ -97,7 +95,6 @@ impl FragmentNode {
     }
 }
 
-#[typetag::serde]
 impl Node for FragmentNode {
     fn add_attr(&mut self, name: String, value: String) {
         self.attrs.push(TagAttr { name, value });
@@ -142,7 +139,6 @@ impl TextNode {
     }
 }
 
-#[typetag::serde]
 impl Node for TextNode {
     fn set_inner_html(&mut self, inner_html: String) {
         self.inner_html = Some(inner_html);

@@ -16,11 +16,11 @@ console_error_panic_hook = { version = "0.1.6", optional = true }
 wee_alloc = { version = "0.4.5", optional = true }
 htmlstream = "*"
 log = "*"
-serde= {version="*", features = ["derive", "rc"]}
+serde= {version="1.0.123", features = ["derive", "rc"]}
 serde_json="*"
 serde_derive="*"
 regex="*"
-typetag="*"
+erased_serde="*"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.20"

@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use crate::model::node::Node;
 
-#[derive(Debug)]
+// #[derive(Debug)]
 pub struct VD {
     pub root: Option<Rc<RefCell<Box<dyn Node>>>>,
 }

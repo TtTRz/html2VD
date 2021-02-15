@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate serde_derive;
+
+
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
