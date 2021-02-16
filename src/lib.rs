@@ -1,12 +1,10 @@
 #[macro_use]
 extern crate serde_derive;
 
-
 #[macro_use]
 extern crate erased_serde;
 
-
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
