@@ -22,11 +22,8 @@ describe("parse simple html", () => {
         node_type: 'ElementNode',
         children: [
           {
-            tag: null,
             inner_html: "Rom",
-            attrs: [],
             node_type: 'TextNode',
-            children: []
           }
         ]
       }
@@ -62,11 +59,8 @@ describe("parse simple html", () => {
           node_type: 'ElementNode',
           children: [
             {
-              tag: null,
               inner_html: "Rom",
-              attrs: [],
               node_type: 'TextNode',
-              children: []
             }
           ]
         },
@@ -77,11 +71,8 @@ describe("parse simple html", () => {
           node_type: 'ElementNode',
           children: [
             {
-              tag: null,
               inner_html: "Chung",
-              attrs: [],
               node_type: 'TextNode',
-              children: []
             }
           ]
         }
@@ -122,11 +113,8 @@ describe("parse simple html with attrs", () => {
         node_type: 'ElementNode',
         children: [
           {
-            tag: null,
             inner_html: "Rom",
-            attrs: [],
             node_type: 'TextNode',
-            children: []
           }
         ]
       }
@@ -168,11 +156,8 @@ describe("parse simple html with attrs", () => {
           node_type: 'ElementNode',
           children: [
             {
-              tag: null,
               inner_html: "Rom",
-              attrs: [],
               node_type: 'TextNode',
-              children: []
             }
           ]
         },
@@ -186,11 +171,8 @@ describe("parse simple html with attrs", () => {
           node_type: 'ElementNode',
           children: [
             {
-              tag: null,
               inner_html: "Chung",
-              attrs: [],
               node_type: 'TextNode',
-              children: []
             }
           ]
         }
@@ -228,11 +210,8 @@ describe("parse complex html", () => {
           node_type: 'ElementNode',
           children: [
             {
-              tag: null,
               inner_html: "Rom",
-              attrs: [],
               node_type: 'TextNode',
-              children: []
             },
             {
               tag: 'span',
@@ -241,11 +220,8 @@ describe("parse complex html", () => {
               node_type: 'ElementNode',
               children: [
                 {
-                  tag: null,
                   inner_html: "Chung",
-                  attrs: [],
                   node_type: 'TextNode',
-                  children: []
                 }
               ]
             }
