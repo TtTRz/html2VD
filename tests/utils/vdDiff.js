@@ -9,16 +9,18 @@ class VDD {
 
   diff_vd = (prevVdObj, nextVdObj) => {
     for (let key in prevVdObj) {
-      switch (key) {
-        case "children":  
-          this.diff_children(prevVdObj, nextVdObj)
-          break
-        case "attrs": 
-          this.diff_attrs(prevVdObj, nextVdObj)
-          break
-        default: 
-          this.is_equal = prevVdObj[key] === nextVdObj[key] ? true : false
-          return
+      if (prevVdObj.hasOwnProperty(key)) {
+        switch (key) {
+          case "children":  
+            this.diff_children(prevVdObj, nextVdObj)
+            break
+          case "attrs": 
+            this.diff_attrs(prevVdObj, nextVdObj)
+            break
+          default: 
+            this.is_equal = prevVdObj[key] === nextVdObj[key] ? true : false
+            return
+        }
       }
     }
   }
@@ -44,10 +46,12 @@ class VDD {
       prevVdAttrsObj[i] = prevVdObj.attrs[i];
       nextVdAttrsObj[i] = nextVdObj.attrs[i];
     }
-    for(let i in prevVdAttrsObj) {
-      if (prevVdAttrsObj[i] !== nextVdAttrsObj[i]) {
-        this.is_equal = false;
-        return 
+    for (let key in prevVdAttrsObj) {
+      if (prevVdAttrsObj.hasOwnProperty(key)) {
+        if (prevVdAttrsObj[key] !== nextVdAttrsObj[key]) {
+          this.is_equal = false;
+          return 
+        }
       }
     }
   }
