@@ -1,13 +1,16 @@
 # html2VD
 HTML To VirtualDOM.
 
+Based On Rust.
+
 **Still in development. Do not use it in productional stage.**
 
-## how to use
+## How To Use
 ```shell
 wasm-pack build --target nodejs
 ```
-## sample
+
+## Sample
 ```html
 <div>
   <h1>title</h1>
@@ -19,7 +22,8 @@ wasm-pack build --target nodejs
   </div>
 </div>
 ```
-```js
+
+```javascript
 const HtmlParser = require("../pkg/html2VD.js")
 
 let vd = HtmlParser.html_2_vd(html)
@@ -41,14 +45,9 @@ let vdObj = {
       inner_html: null,
       attrs: [],
       children: [{
-        tag: null,
         node_type: "TextNode",
         inner_html: "title",
-        attrs: [],
-        children: [],
-        parent: null,
       }],
-      parent: null,
     }, {
       tag: "button",
       node_type: "ElementNode",
@@ -58,14 +57,9 @@ let vdObj = {
         value: "handleclick"
       }],
       children: [{
-        tag: null,
         node_type: "TextNode",
         inner_html: "change title",
-        attrs: [],
-        children: [],
-        parent: null,
       }],
-      parent: null
     }, {
       tag: "div",
       node_type: "ElementNode",
@@ -80,19 +74,11 @@ let vdObj = {
         inner_html: null,
         attrs: [],
         children: [{
-          tag: null,
           node_type: "TextNode",
           inner_html: "Rom",
-          attrs: [],
-          children: [],
-          parent: null
         }],
-        parent: null
       }],
-      parent: null,
     }],
-    parent: null,
   }],
-  parent: null,
 }
 ```
