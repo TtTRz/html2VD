@@ -23,15 +23,17 @@ pub trait Node: erased_serde::Serialize {
     fn add_child(&mut self, child: Rc<RefCell<Box<dyn Node>>>) {}
 }
 
+serialize_trait_object!(Node);
+
 use core::fmt::Debug;
 
-// impl Debug for dyn Node {
+// impl Debug for Node {
 //     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
 //         write!(f, "{:?}: {:?}", self.get_node_type(), self)
 //     }
 // }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 pub struct ElementNode {
     tag: Option<String>,
     inner_html: Option<String>,
@@ -78,7 +80,7 @@ impl Default for ElementNode {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize)]
 pub struct FragmentNode {
     tag: Option<String>,
     inner_html: Option<String>,
@@ -125,7 +127,7 @@ impl Default for FragmentNode {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct TextNode {
     inner_html: Option<String>,
     node_type: NodeType,

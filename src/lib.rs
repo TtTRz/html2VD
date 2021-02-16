@@ -2,6 +2,10 @@
 extern crate serde_derive;
 
 
+#[macro_use]
+extern crate erased_serde;
+
+
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -35,7 +39,7 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize)]
 pub struct IJsNode {
     #[wasm_bindgen(skip)]
     pub root: Rc<RefCell<Box<dyn Node>>>,
