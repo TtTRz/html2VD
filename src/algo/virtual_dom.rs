@@ -2,11 +2,15 @@ use htmlstream::HTMLTagState;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::model::node::{ElementNode, FragmentNode, Node, NodeType, TextNode};
+use crate::model::element_node::ElementNode;
+use crate::model::fragment_node::FragmentNode;
+use crate::model::node::{Node, NodeType};
+use crate::model::text_node::TextNode;
+
 use crate::model::vd::VD;
 
 pub trait VirtualDom {
-    fn parse_html(&mut self, html: &str) {}
+    fn parse_html(&mut self, _html: &str) {}
     fn get_vd(&mut self) -> Option<Rc<RefCell<Box<dyn Node>>>>;
 }
 
@@ -18,7 +22,6 @@ impl VirtualDom for VD {
         let mut parent_node_stack: Vec<Rc<RefCell<Box<dyn Node>>>> = vec![];
         parent_node_stack.push(Rc::clone(&root) as _);
         for (_, tag) in htmlstream::tag_iter(html) {
-            println!("{:?}", tag);
             match tag.state {
                 HTMLTagState::Opening => {
                     let tag_name = match tag.name.as_str() {
